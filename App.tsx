@@ -1,45 +1,38 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import UserProvider from "./src/context/UserContext";
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+import LoginScreen from "./src/screens/LoginScreen";
+import UsersScreen from "./src/screens/UsersScreen";
+import ChatScreen from "./src/screens/ChatScreen";
 
+const Stack = createNativeStackNavigator();
+
+export default function App() {
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <UserProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+          />
+
+          <Stack.Screen
+            name="Users"
+            component={UsersScreen}
+          />
+
+          <Stack.Screen
+            name="Chat"
+            component={ChatScreen}
+          />
+
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;

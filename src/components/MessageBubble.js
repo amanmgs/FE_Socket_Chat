@@ -1,0 +1,53 @@
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+
+export default function MessageBubble({ item, isMe }) {
+  return (
+    <View
+      style={[
+        styles.container,
+        isMe ? styles.right : styles.left,
+      ]}
+    >
+      <Text style={styles.message}>
+        {item.message}
+      </Text>
+
+      <Text style={styles.time}>
+        {item.time}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+
+  container: {
+    maxWidth: "75%",
+    padding: 12,
+    borderRadius: 10,
+    marginVertical: 5,
+  },
+
+  left: {
+    alignSelf: "flex-start",
+    backgroundColor: "#ECECEC",
+  },
+
+  right: {
+    alignSelf: "flex-end",
+    backgroundColor: "#DCF8C6",
+  },
+
+  message: {
+    fontSize: 16,
+  },
+
+  time: {
+    marginTop: 5,
+    fontSize: 11,
+    color: "#666",
+    alignSelf: "flex-end",
+  },
+
+});
