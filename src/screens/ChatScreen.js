@@ -36,6 +36,13 @@ export default function ChatScreen({ route }) {
 
       if (belongsToChat) {
         setMessages(prev => [...prev, data]);
+
+        if (data.from === receiver) {
+          socket.emit('read_message', {
+            messageId: data._id || data.id,
+            from: receiver,
+          });
+        }
       }
     });
 
@@ -56,6 +63,25 @@ export default function ChatScreen({ route }) {
     });
 
     return () => socket.off('typing');
+  }, []);
+
+  useEffect(() => {
+    socket.emit('get_messages', {
+      from: username,
+      to: receiver,
+    });
+  }, [username, receiver]);
+
+  useEffect(() => {
+    const handleChatHistory = history => {
+      setMessages(history);
+    };
+
+    socket.on('chat_history', handleChatHistory);
+
+    return () => {
+      socket.off('chat_history', handleChatHistory);
+    };
   }, []);
 
   const sendMessage = () => {
