@@ -1,19 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function MessageBubble({ item, isMe }) {
   return (
-    <View
-      style={[
-        styles.container,
-        isMe ? styles.right : styles.left,
-      ]}
-    >
-      <Text style={styles.message}>
-        {item.message}
-      </Text>
+    <View style={[styles.container, isMe ? styles.right : styles.left]}>
+      <Text style={styles.message}>{item.message}</Text>
 
       <Text style={styles.time}>
+        {item.delivered ? '✔' : ''}
         {item.time}
       </Text>
     </View>
@@ -21,22 +15,21 @@ export default function MessageBubble({ item, isMe }) {
 }
 
 const styles = StyleSheet.create({
-
   container: {
-    maxWidth: "75%",
+    maxWidth: '75%',
     padding: 12,
     borderRadius: 10,
     marginVertical: 5,
   },
 
   left: {
-    alignSelf: "flex-start",
-    backgroundColor: "#ECECEC",
+    alignSelf: 'flex-start',
+    backgroundColor: '#ECECEC',
   },
 
   right: {
-    alignSelf: "flex-end",
-    backgroundColor: "#DCF8C6",
+    alignSelf: 'flex-end',
+    backgroundColor: '#DCF8C6',
   },
 
   message: {
@@ -46,8 +39,7 @@ const styles = StyleSheet.create({
   time: {
     marginTop: 5,
     fontSize: 11,
-    color: "#666",
-    alignSelf: "flex-end",
+    color: '#666',
+    alignSelf: 'flex-end',
   },
-
 });
