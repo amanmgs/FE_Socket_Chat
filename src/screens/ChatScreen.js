@@ -1,9 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import {
   View,
@@ -12,59 +7,80 @@ import {
   Text,
   FlatList,
   StyleSheet,
-} from "react-native";
+} from 'react-native';
 
-import socket from "../socket/socket";
-import { UserContext } from "../context/UserContext";
-import MessageBubble from "../components/MessageBubble";
+import socket from '../socket/socket';
+import { UserContext } from '../context/UserContext';
+import MessageBubble from '../components/MessageBubble';
 
 export default function ChatScreen({ route }) {
-
   const { receiver } = route.params;
 
   const { username } = useContext(UserContext);
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   const [messages, setMessages] = useState([]);
 
+  const [typing, setTyping] = useState(false);
+
   const flatListRef = useRef();
 
+  const timer = useRef();
+
   useEffect(() => {
-
-    socket.on("private_message", (data) => {
-
+    socket.on('private_message', data => {
       const belongsToChat =
         (data.from === username && data.to === receiver) ||
         (data.from === receiver && data.to === username);
 
       if (belongsToChat) {
-        setMessages((prev) => [...prev, data]);
+        setMessages(prev => [...prev, data]);
       }
-
     });
 
-    return () => socket.off("private_message");
-
+    return () => socket.off('private_message');
   }, [receiver, username]);
 
-  const sendMessage = () => {
+  useEffect(() => {
+    socket.on('typing', data => {
+      if (data.from === receiver) {
+        setTyping(true);
 
+        clearTimeout(timer.current);
+
+        timer.current = setTimeout(() => {
+          setTyping(false);
+        }, 1500);
+      }
+    });
+
+    return () => socket.off('typing');
+  }, []);
+
+  const sendMessage = () => {
     if (!message.trim()) return;
 
-    socket.emit("private_message", {
+    socket.emit('private_message', {
       from: username,
       to: receiver,
       message: message,
     });
 
-    setMessage("");
+    setMessage('');
+  };
 
+  const handleTyping = text => {
+    setMessage(text);
+
+    socket.emit('typing', {
+      from: username,
+      to: receiver,
+    });
   };
 
   return (
     <View style={styles.container}>
-
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -73,55 +89,45 @@ export default function ChatScreen({ route }) {
           flatListRef.current?.scrollToEnd({ animated: true })
         }
         renderItem={({ item }) => (
-          <MessageBubble
-            item={item}
-            isMe={item.from === username}
-          />
+          <MessageBubble item={item} isMe={item.from === username} />
         )}
       />
 
-      <View style={styles.bottom}>
+      {typing && <Text style={styles.typing}>{receiver} is typing...</Text>}
 
+      <View style={styles.bottom}>
         <TextInput
           value={message}
-          onChangeText={setMessage}
+          onChangeText={handleTyping}
           placeholder="Type message..."
           style={styles.input}
         />
 
-        <TouchableOpacity
-          style={styles.send}
-          onPress={sendMessage}
-        >
-          <Text style={styles.sendText}>
-            Send
-          </Text>
+        <TouchableOpacity style={styles.send} onPress={sendMessage}>
+          <Text style={styles.sendText}>Send</Text>
         </TouchableOpacity>
-
       </View>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
   },
 
   bottom: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 10,
   },
 
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#DDD",
+    borderColor: '#DDD',
     borderRadius: 20,
     paddingHorizontal: 15,
     height: 45,
@@ -129,15 +135,14 @@ const styles = StyleSheet.create({
 
   send: {
     marginLeft: 10,
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 20,
   },
 
   sendText: {
-    color: "#FFF",
-    fontWeight: "bold",
+    color: '#FFF',
+    fontWeight: 'bold',
   },
-
 });
