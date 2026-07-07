@@ -5,7 +5,7 @@ export default function UserItem({ item, onPress }) {
   return (
     <TouchableOpacity onPress={onPress} style={styles.card}>
       <View style={styles.dot} />
-      <Text style={styles.text}>{item}</Text>
+      <Text style={styles.text}>{item.username}</Text>
     </TouchableOpacity>
   );
 }

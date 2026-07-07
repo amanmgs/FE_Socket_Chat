@@ -1,39 +1,36 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-} from "react-native";
+} from 'react-native';
 
-import socket from "../socket/socket";
-import { UserContext } from "../context/UserContext";
+import socket from '../socket/socket';
+import { UserContext } from '../context/UserContext';
+import { v4 as uuidv4 } from 'uuid';
+
+const deviceId = uuidv4();
 
 export default function LoginScreen({ navigation }) {
-
   const { setUsername } = useContext(UserContext);
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
 
   const login = () => {
-
     if (!name.trim()) return;
-
-    socket.emit("register", name);
+    console.log('name', name);
+    socket.emit('register', { name, deviceId });
 
     setUsername(name);
 
-    navigation.replace("Users");
-
+    navigation.replace('Users');
   };
 
   return (
     <View style={styles.container}>
-
-      <Text style={styles.title}>
-        One-to-One Chat
-      </Text>
+      <Text style={styles.title}>One-to-One Chat</Text>
 
       <TextInput
         placeholder="Enter Username"
@@ -42,32 +39,25 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setName}
       />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={login}
-      >
-        <Text style={styles.buttonText}>
-          Continue
-        </Text>
+      <TouchableOpacity style={styles.button} onPress={login}>
+        <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
   },
 
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 30,
-    textAlign: "center",
+    textAlign: 'center',
   },
 
   input: {
@@ -78,16 +68,15 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     padding: 15,
     borderRadius: 10,
   },
 
   buttonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
     fontSize: 18,
   },
-
 });
