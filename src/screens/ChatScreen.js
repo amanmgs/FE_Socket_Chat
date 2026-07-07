@@ -99,6 +99,8 @@ export default function ChatScreen({ route }) {
   const handleTyping = text => {
     setMessage(text);
 
+    console.log('@123', text)
+
     socket.emit('typing', {
       from: username,
       to: receiver,

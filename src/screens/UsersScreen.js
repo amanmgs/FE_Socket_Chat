@@ -23,8 +23,9 @@ export default function UsersScreen({ navigation }) {
   }, []);
 
   const openChat = user => {
+    console.log('@user', user)
     navigation.navigate('Chat', {
-      receiver: user,
+      receiver: user?.username,
     });
   };
 
