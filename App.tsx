@@ -33,7 +33,7 @@ const AppStack = createNativeStackNavigator<AppStackParamList>();
 
 function AuthNavigator() {
   return (
-    <AuthStack.Navigator screenOptions={{ headerShown: true }}>
+    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen
         name="Login"
         component={LoginScreen}
@@ -44,7 +44,7 @@ function AuthNavigator() {
 
 function MainNavigator() {
   return (
-    <AppStack.Navigator screenOptions={{ headerShown: true }}>
+    <AppStack.Navigator screenOptions={{ headerShown: false }}>
       <AppStack.Screen
         name="Users"
         component={UsersScreen}

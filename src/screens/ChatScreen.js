@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-
 import {
   View,
   TextInput,
@@ -7,15 +6,19 @@ import {
   Text,
   FlatList,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import COLORS from '../theme/colors';
 import socket from '../socket/socket';
 import { UserContext } from '../context/UserContext';
 import MessageBubble from '../components/MessageBubble';
 
 export default function ChatScreen({ route }) {
-  const { receiver } = route.params;
+  const { receiver, user } = route.params;
 
   // const { username } = useContext(UserContext);
 
@@ -30,6 +33,8 @@ export default function ChatScreen({ route }) {
   const flatListRef = useRef();
 
   const timer = useRef();
+
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -141,7 +146,46 @@ export default function ChatScreen({ route }) {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 12,
+          },
+        ]}
+      >
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>
+            {receiver.charAt(0).toUpperCase()}
+          </Text>
+
+          <View
+            style={[
+              styles.onlineDot,
+              {
+                backgroundColor: user.online ? COLORS.online : COLORS.offline,
+              },
+            ]}
+          />
+        </View>
+
+        <View style={{ marginLeft: 12 }}>
+          <Text style={styles.headerName}>{receiver}</Text>
+
+          <Text style={styles.headerStatus}>
+            {user.online
+              ? 'Online'
+              : `Last seen ${new Date(user.lastSeen).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}`}
+          </Text>
+        </View>
+      </View>
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -154,9 +198,13 @@ export default function ChatScreen({ route }) {
         )}
       />
 
-      {typing && <Text style={styles.typing}>{receiver} is typing...</Text>}
+      {typing && (
+        <View style={styles.typingContainer}>
+          <Text style={styles.typing}>{receiver} is typing...</Text>
+        </View>
+      )}
 
-      <View style={styles.bottom}>
+      <View style={[styles.bottom, { paddingBottom: insets.bottom + 12 }]}>
         <TextInput
           value={message}
           onChangeText={handleTyping}
@@ -165,45 +213,106 @@ export default function ChatScreen({ route }) {
         />
 
         <TouchableOpacity style={styles.send} onPress={sendMessage}>
-          <Text style={styles.sendText}>Send</Text>
+          <Text style={styles.sendText}>➤</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#FFF',
+    backgroundColor: COLORS.background,
+  },
+
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: COLORS.primary,
+    paddingBottom: 12,
+  },
+
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  avatarText: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: COLORS.primary,
+  },
+
+  headerName: {
+    color: COLORS.white,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+
+  headerStatus: {
+    color: '#DCEBFF',
+    marginTop: 2,
+  },
+
+  typingContainer: {
+    paddingHorizontal: 12,
+    paddingBottom: 8,
+  },
+
+  typing: {
+    color: COLORS.textSecondary,
+    fontStyle: 'italic',
   },
 
   bottom: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    padding: 12,
+    backgroundColor: COLORS.white,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
   },
 
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    height: 45,
+    height: 48,
+    backgroundColor: '#F4F7FC',
+    borderRadius: 24,
+    paddingHorizontal: 18,
+    fontSize: 16,
+    color: COLORS.text,
   },
 
   send: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: 10,
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 20,
   },
 
   sendText: {
-    color: '#FFF',
-    fontWeight: 'bold',
+    color: COLORS.white,
+    fontSize: 20,
+    fontWeight: '700',
+  },
+
+  onlineDot: {
+    position: 'absolute',
+    right: 2,
+    bottom: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: COLORS.white,
   },
 });
