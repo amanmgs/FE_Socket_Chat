@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import socket from '../socket/socket';
 import { UserContext } from '../context/UserContext';
@@ -11,19 +12,37 @@ export default function UsersScreen({ navigation }) {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    socket.on('online_users', data => {
-      console.log('RAW USERS:', data);
+    const registerUser = async () => {
+      const storedUsername = await AsyncStorage.getItem('username');
+      const deviceId = await AsyncStorage.getItem('deviceId');
 
-      const filtered = data.filter(u => u.username !== username);
+      if (storedUsername && deviceId) {
+        socket.emit('register', {
+          name: storedUsername,
+          deviceId,
+        });
+      }
+    };
+
+    registerUser();
+  }, []);
+
+  useEffect(() => {
+    const handleUsers = async data => {
+      const storedUsername = await AsyncStorage.getItem('username');
+
+      const filtered = data.filter(user => user.username !== storedUsername);
 
       setUsers(filtered);
-    });
+    };
 
-    return () => socket.off('online_users');
+    socket.on('online_users', handleUsers);
+
+    return () => socket.off('online_users', handleUsers);
   }, []);
 
   const openChat = user => {
-    console.log('@user', user)
+    console.log('@user', user);
     navigation.navigate('Chat', {
       receiver: user?.username,
     });
