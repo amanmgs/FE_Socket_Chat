@@ -10,6 +10,7 @@ import {
 import socket from '../socket/socket';
 import { UserContext } from '../context/UserContext';
 import { v4 as uuidv4 } from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const deviceId = uuidv4();
 
@@ -18,14 +19,17 @@ export default function LoginScreen({ navigation }) {
 
   const [name, setName] = useState('');
 
-  const login = () => {
+  const login = async () => {
     if (!name.trim()) return;
     console.log('name', name);
+    await AsyncStorage.setItem('username', name);
+    await AsyncStorage.setItem('deviceId', deviceId);
+
     socket.emit('register', { name, deviceId });
 
     setUsername(name);
 
-    navigation.replace('Users');
+    navigation.replace('App');
   };
 
   return (
