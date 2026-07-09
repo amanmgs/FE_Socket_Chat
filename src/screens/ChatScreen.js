@@ -8,6 +8,7 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import socket from '../socket/socket';
 import { UserContext } from '../context/UserContext';
@@ -16,7 +17,9 @@ import MessageBubble from '../components/MessageBubble';
 export default function ChatScreen({ route }) {
   const { receiver } = route.params;
 
-  const { username } = useContext(UserContext);
+  // const { username } = useContext(UserContext);
+
+  const [username, setCurrentUser] = useState('');
 
   const [message, setMessage] = useState('');
 
@@ -27,6 +30,18 @@ export default function ChatScreen({ route }) {
   const flatListRef = useRef();
 
   const timer = useRef();
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const storedUsername = await AsyncStorage.getItem('username');
+
+      if (storedUsername) {
+        setCurrentUser(storedUsername);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   useEffect(() => {
     socket.on('private_message', data => {

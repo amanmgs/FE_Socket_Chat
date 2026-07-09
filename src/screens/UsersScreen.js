@@ -16,15 +16,21 @@ export default function UsersScreen({ navigation }) {
       const storedUsername = await AsyncStorage.getItem('username');
       const deviceId = await AsyncStorage.getItem('deviceId');
 
-      if (storedUsername && deviceId) {
-        socket.emit('register', {
-          name: storedUsername,
-          deviceId,
-        });
-      }
+      if (!storedUsername || !deviceId) return;
+
+      socket.emit('register', {
+        name: storedUsername,
+        deviceId,
+      });
     };
 
     registerUser();
+
+    socket.on('connect', registerUser);
+
+    return () => {
+      socket.off('connect', registerUser);
+    };
   }, []);
 
   useEffect(() => {
@@ -54,7 +60,7 @@ export default function UsersScreen({ navigation }) {
 
       <FlatList
         data={users}
-        keyExtractor={item => item}
+        keyExtractor={item => item._id}
         renderItem={({ item }) => (
           <UserItem item={item} onPress={() => openChat(item)} />
         )}

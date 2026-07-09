@@ -4,8 +4,20 @@ import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 export default function UserItem({ item, onPress }) {
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={{ padding: 15, flexDirection:'row', justifyContent:'space-between' }}>
+      <View
+        style={{
+          padding: 15,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
         <Text>{item.username}</Text>
+
+        {item.unreadCount > 0 && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{item.unreadCount}</Text>
+          </View>
+        )}
 
         <Text>
           {item.online
