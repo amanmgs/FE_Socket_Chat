@@ -10,12 +10,26 @@ const formatTime = (date) => {
 
 export default function MessageBubble({ item, isMe }) {
   console.log('@item', item);
+
+  const getTick = () => {
+  if (!isMe) return "";
+
+  if (item.read) {
+    return "✔✔";
+  }
+
+  if (item.delivered) {
+    return "✔";
+  }
+
+  return "";
+};
   return (
     <View style={[styles.container, isMe ? styles.right : styles.left]}>
       <Text style={styles.message}>{item.message}</Text>
 
       <Text style={styles.time}>
-        {item.delivered ? '✔ ' : ''}
+        {getTick()}
         {formatTime(item.createdAt)}
       </Text>
     </View>

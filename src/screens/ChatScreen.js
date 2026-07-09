@@ -84,6 +84,24 @@ export default function ChatScreen({ route }) {
     };
   }, []);
 
+  useEffect(() => {
+    const handleRead = ({ messageId }) => {
+      setMessages(prev =>
+        prev.map(msg =>
+          msg._id === messageId || msg.id === messageId
+            ? { ...msg, read: true }
+            : msg,
+        ),
+      );
+    };
+
+    socket.on('message_read', handleRead);
+
+    return () => {
+      socket.off('message_read', handleRead);
+    };
+  }, []);
+
   const sendMessage = () => {
     if (!message.trim()) return;
 
@@ -99,7 +117,7 @@ export default function ChatScreen({ route }) {
   const handleTyping = text => {
     setMessage(text);
 
-    console.log('@123', text)
+    console.log('@123', text);
 
     socket.emit('typing', {
       from: username,
