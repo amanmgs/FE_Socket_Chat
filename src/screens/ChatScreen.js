@@ -177,12 +177,7 @@ export default function ChatScreen({ route }) {
           <Text style={styles.headerName}>{receiver}</Text>
 
           <Text style={styles.headerStatus}>
-            {user.online
-              ? 'Online'
-              : `Last seen ${new Date(user.lastSeen).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}`}
+             Chat securely
           </Text>
         </View>
       </View>
