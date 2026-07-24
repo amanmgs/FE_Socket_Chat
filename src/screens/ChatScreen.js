@@ -148,7 +148,8 @@ export default function ChatScreen({ route }) {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+       keyboardVerticalOffset={-insets.bottom}
     >
       <View
         style={[
@@ -158,6 +159,12 @@ export default function ChatScreen({ route }) {
           },
         ]}
       >
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backText}>←</Text>
+        </TouchableOpacity>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>
             {receiver.charAt(0).toUpperCase()}
@@ -176,9 +183,7 @@ export default function ChatScreen({ route }) {
         <View style={{ marginLeft: 12 }}>
           <Text style={styles.headerName}>{receiver}</Text>
 
-          <Text style={styles.headerStatus}>
-             Chat securely
-          </Text>
+          <Text style={styles.headerStatus}>Chat securely</Text>
         </View>
       </View>
       <FlatList
@@ -309,5 +314,20 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 2,
     borderColor: COLORS.white,
+  },
+
+  backButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+    marginTop: Platform.OS === 'ios' ? 0 : -12,
+  },
+
+  backText: {
+    color: COLORS.white,
+    fontSize: 28,
+    fontWeight: '600',
   },
 });
